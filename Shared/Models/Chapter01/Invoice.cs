@@ -7,5 +7,24 @@ namespace Shared.Models.Chapter01
     {
         public string Customer { get; set; }
         public List<Performance> Performances { get; set; }
+
+        public Invoice()
+        {
+            Performances = new List<Performance>();
+        }
+
+        public Invoice(string customer)
+        {
+            Customer = customer;
+            Performances = new List<Performance>();
+        }
+
+        public void AddPerformance(Play play, int audience)
+        {
+            if (Performances.Exists(x => x.Play.Id == play.Id))
+                return;
+            
+            Performances.Add(new Performance(play, audience));
+        }
     }
 }

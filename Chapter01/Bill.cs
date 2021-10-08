@@ -1,54 +1,69 @@
-﻿using System;
+﻿using Shared.Models.Chapter01;
+using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.Linq;
+using System.Threading;
 
 namespace Chapter01
 {
     public class Bill
     {
 
-        public string Statement(Invoice invoice, plays)
+        public string Statement(Invoice invoice, List<Play> plays)
         {
-            let totalAmount = 0;
-            let volumeCredits = 0;
-            let result = `Statement for ${ invoice.customer}\n`;
-            const format = new Intl.NumberFormat("en-US",
-            { style: "currency", currency: "USD",
-                minimumFractionDigits: 2 }).format;
-  
-            for (let perf of invoice.performances) {
-                const play = plays[perf.playID];
-        let thisAmount = 0;
-  
-                switch (play.type) {
-                    case "tragedy":
+            var totalAmount = 0;
+            decimal volumeCredits = 0;
+            var result = $"Statement for { invoice.Customer}\n";
+
+            //const format = new Intl.NumberFormat("en-US",
+            //        { style: "currency", currency: "USD",
+            //            minimumFractionDigits: 2 }).format;
+
+            CultureInfo culture = new CultureInfo("en-US");
+
+            foreach (var perf in invoice.Performances)
+            {
+                var play = plays.FirstOrDefault(x => x.Id == perf.Play.Id);
+
+                if (play == null)
+                    throw new Exception($"Play with identifier: {perf.Play.Id} was not found");
+
+                var thisAmount = 0;
+
+                switch (play.Type)
+                {
+                    case PlayType.Tragedy:
                         thisAmount = 40000;
-                        if (perf.audience > 30) {
-                            thisAmount += 1000 * (perf.audience - 30);
+                        if (perf.Audience > 30)
+                        {
+                            thisAmount += 1000 * (perf.Audience - 30);
                         }
                         break;
-                    case "comedy":
+                    case PlayType.Comedy:
                         thisAmount = 30000;
-                        if (perf.audience > 20) {
-                            thisAmount += 10000 + 500 * (perf.audience - 20);
+                        if (perf.Audience > 20)
+                        {
+                            thisAmount += 10000 + 500 * (perf.Audience - 20);
                         }
-thisAmount += 300 * perf.audience;
-break;
-default:
-                        throw new Error(`unknown type: ${ play.type }`);
+                        thisAmount += 300 * perf.Audience;
+                        break;
+                    default:
+                        throw new Exception($"unknown type: {play.Type}");
                 }
-  
-                // add volume credits
-                volumeCredits += Math.max(perf.audience - 30, 0);
-// add extra credit for every ten comedy attendees
-if ("comedy" === play.type) volumeCredits += Math.floor(perf.audience / 5);
 
-// print line for this order
-result += `  ${ play.name}: ${ format(thisAmount / 100)} (${ perf.audience}
-seats)\n`;
-totalAmount += thisAmount;
+                // add volume credits
+                volumeCredits += Math.Max(perf.Audience - 30, 0);
+                // add extra credit for every ten comedy attendees
+                if (PlayType.Comedy == play.Type) volumeCredits += Math.Floor((decimal)perf.Audience / 5);
+
+                // print line for this order
+                result += $"{ play.Name}: { (thisAmount / 100).ToString("C", culture)} ({ perf.Audience} seats)\n";
+                totalAmount += thisAmount;
             }
-            result += `Amount owed is ${format(totalAmount/100)}\n`;
-result += `You earned ${volumeCredits} credits\n`;
-return result;
+            result += $"Amount owed is { (totalAmount / 100).ToString("C", culture)}\n";
+            result += $"You earned {volumeCredits} credits\n";
+            return result;
         }
     }
 }
