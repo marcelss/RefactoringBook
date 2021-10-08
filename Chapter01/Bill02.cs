@@ -7,18 +7,13 @@ using System.Threading;
 
 namespace Chapter01
 {
-    public class Bill
+    public class Bill02
     {
-
         public string Statement(Invoice invoice, List<Play> plays)
         {
             var totalAmount = 0;
             decimal volumeCredits = 0;
             var result = $"Statement for { invoice.Customer}\n";
-
-            //const format = new Intl.NumberFormat("en-US",
-            //        { style: "currency", currency: "USD",
-            //            minimumFractionDigits: 2 }).format;
 
             CultureInfo culture = new CultureInfo("en-US");
 
@@ -29,28 +24,7 @@ namespace Chapter01
                 if (play == null)
                     throw new Exception($"Play with identifier: {perf.Play.Id} was not found");
 
-                var thisAmount = 0;
-
-                switch (play.Type)
-                {
-                    case PlayType.Tragedy:
-                        thisAmount = 40000;
-                        if (perf.Audience > 30)
-                        {
-                            thisAmount += 1000 * (perf.Audience - 30);
-                        }
-                        break;
-                    case PlayType.Comedy:
-                        thisAmount = 30000;
-                        if (perf.Audience > 20)
-                        {
-                            thisAmount += 10000 + 500 * (perf.Audience - 20);
-                        }
-                        thisAmount += 300 * perf.Audience;
-                        break;
-                    default:
-                        throw new Exception($"unknown type: {play.Type}");
-                }
+                var thisAmount = AmountFor(perf, play);
 
                 // add volume credits
                 volumeCredits += Math.Max(perf.Audience - 30, 0);
@@ -64,6 +38,39 @@ namespace Chapter01
             result += $"Amount owed is { (totalAmount / 100).ToString("C", culture)}\n";
             result += $"You earned {volumeCredits} credits\n";
             return result;
+        }
+
+        /// <summary>
+        /// First refactor using Extract Function (134)
+        /// </summary>
+        /// <param name="perf"></param>
+        /// <param name="play"></param>
+        /// <returns></returns>
+        public int AmountFor(Performance perf, Play play)
+        {
+            var thisAmount = 0;
+            switch (play.Type)
+            {
+                case PlayType.Tragedy:
+                    thisAmount = 40000;
+                    if (perf.Audience > 30)
+                    {
+                        thisAmount += 1000 * (perf.Audience - 30);
+                    }
+                    break;
+                case PlayType.Comedy:
+                    thisAmount = 30000;
+                    if (perf.Audience > 20)
+                    {
+                        thisAmount += 10000 + 500 * (perf.Audience - 20);
+                    }
+                    thisAmount += 300 * perf.Audience;
+                    break;
+                default:
+                    throw new Exception($"unknown type: {play.Type}");
+            }
+
+            return thisAmount;
         }
     }
 }

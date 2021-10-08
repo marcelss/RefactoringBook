@@ -9,29 +9,50 @@ using Xunit;
 
 namespace Chapter01Tests
 {
-    public class BillTests
+    public class Bill01Tests
     {
         public List<Play> Plays;
         public Invoice Invoice;
 
         [Fact]
-        public void New_Statement_ReturnsValidString()
+        public void Bill01_New_Statement_ReturnsValidString()
         {
             //Arrange
             var expected = CleanText(@"Statement for BigCo
-                            Hamlet: $650.00 (55 seats)
-                            As You Like It: $580.00 (35 seats)
-                            Othello: $500.00(40 seats)
-                            Amount owed is $1,730.00
-                            You earned 47 credits");
+                                                Hamlet: $650.00 (55 seats)
+                                                As You Like It: $580.00 (35 seats)
+                                                Othello: $500.00(40 seats)
+                                                Amount owed is $1,730.00
+                                                You earned 47 credits");
             SetTestData();
             //Act
-            var bill = new Bill();
+            var bill = new Bill01();
             var result = bill.Statement(Invoice, Plays);
 
             //Assert
             Assert.NotEmpty(result);
             
+            Assert.Equal(expected, CleanText(result));
+        }
+
+        [Fact]
+        public void Bill02_New_Statement_ReturnsValidString()
+        {
+            //Arrange
+            var expected = CleanText(@"Statement for BigCo
+                                                Hamlet: $650.00 (55 seats)
+                                                As You Like It: $580.00 (35 seats)
+                                                Othello: $500.00(40 seats)
+                                                Amount owed is $1,730.00
+                                                You earned 47 credits");
+            SetTestData();
+            //Act
+            var bill = new Bill02();
+            var result = bill.Statement(Invoice, Plays);
+
+            //Assert
+            Assert.NotEmpty(result);
+
             Assert.Equal(expected, CleanText(result));
         }
 
