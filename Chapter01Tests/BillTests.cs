@@ -9,10 +9,15 @@ using Xunit;
 
 namespace Chapter01Tests
 {
-    public class Bill01Tests
+    public class BillTests
     {
         public List<Play> Plays;
         public Invoice Invoice;
+
+        public BillTests()
+        {
+            SetTestData();
+        }
 
         [Fact]
         public void Bill01_New_Statement_ReturnsValidString()
@@ -24,9 +29,9 @@ namespace Chapter01Tests
                                                 Othello: $500.00(40 seats)
                                                 Amount owed is $1,730.00
                                                 You earned 47 credits");
-            SetTestData();
-            //Act
             var bill = new Bill01();
+
+            //Act
             var result = bill.Statement(Invoice, Plays);
 
             //Assert
@@ -45,15 +50,31 @@ namespace Chapter01Tests
                                                 Othello: $500.00(40 seats)
                                                 Amount owed is $1,730.00
                                                 You earned 47 credits");
-            SetTestData();
-            //Act
             var bill = new Bill02();
+
+            //Act
             var result = bill.Statement(Invoice, Plays);
 
             //Assert
             Assert.NotEmpty(result);
 
             Assert.Equal(expected, CleanText(result));
+        }
+
+        [Theory]
+        [MemberData(nameof(PerformancesData))]
+        public void Bill02_AmountFor_ReturnsExpectedAmount(Performance perf, int expected)
+        {
+            //Arrange
+            var bill = new Bill02();
+
+            //Act
+            var result = bill.AmountFor(perf);
+
+            //Assert
+            Assert.IsType<int>(result);
+
+            Assert.Equal(expected, result);
         }
 
         private string CleanText(string input)
@@ -75,5 +96,13 @@ namespace Chapter01Tests
             Invoice.AddPerformance(Plays.First(x => x.Id == "as-like"), 35);
             Invoice.AddPerformance(Plays.First(x => x.Id == "othello"), 40);
         }
+
+        public static IEnumerable<object[]> PerformancesData =>
+            new List<object[]>
+            {
+                new object[] { new Performance("hamlet","Hamlet",PlayType.Tragedy, 55), 65000},
+                new object[] { new Performance("as-like", "As You Like It", PlayType.Comedy, 35), 58000},
+                new object[] { new Performance("othello", "Othello", PlayType.Tragedy, 40), 50000 }
+            };
     }
 }

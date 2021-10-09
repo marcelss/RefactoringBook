@@ -13,11 +13,11 @@ namespace Shared.Models.Chapter01
         public string Name { get; set; }
         public PlayType Type { get; set; }
 
-        public Play(string id, string name, PlayType playType)
+        public Play(string id, string name, PlayType type)
         {
             Id = id;
             Name = name;
-            Type = playType;
+            Type = type;
         }
     }
 }

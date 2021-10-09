@@ -19,20 +19,18 @@ namespace Chapter01
 
             foreach (var perf in invoice.Performances)
             {
-                var play = plays.FirstOrDefault(x => x.Id == perf.Play.Id);
-
-                if (play == null)
+                if (perf.Play == null)
                     throw new Exception($"Play with identifier: {perf.Play.Id} was not found");
 
-                var thisAmount = AmountFor(perf, play);
+                var thisAmount = AmountFor(perf);
 
                 // add volume credits
                 volumeCredits += Math.Max(perf.Audience - 30, 0);
                 // add extra credit for every ten comedy attendees
-                if (PlayType.Comedy == play.Type) volumeCredits += Math.Floor((decimal)perf.Audience / 5);
+                if (PlayType.Comedy == perf.Play.Type) volumeCredits += Math.Floor((decimal)perf.Audience / 5);
 
                 // print line for this order
-                result += $"{ play.Name}: { (thisAmount / 100).ToString("C", culture)} ({ perf.Audience} seats)\n";
+                result += $"{ perf.Play.Name}: { (thisAmount / 100).ToString("C", culture)} ({ perf.Audience} seats)\n";
                 totalAmount += thisAmount;
             }
             result += $"Amount owed is { (totalAmount / 100).ToString("C", culture)}\n";
@@ -46,10 +44,10 @@ namespace Chapter01
         /// <param name="perf"></param>
         /// <param name="play"></param>
         /// <returns></returns>
-        public int AmountFor(Performance perf, Play play)
+        public int AmountFor(Performance perf)
         {
             var thisAmount = 0;
-            switch (play.Type)
+            switch (perf.Play.Type)
             {
                 case PlayType.Tragedy:
                     thisAmount = 40000;
@@ -67,7 +65,7 @@ namespace Chapter01
                     thisAmount += 300 * perf.Audience;
                     break;
                 default:
-                    throw new Exception($"unknown type: {play.Type}");
+                    throw new Exception($"unknown type: {perf.Play.Type}");
             }
 
             return thisAmount;

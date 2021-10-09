@@ -10,5 +10,11 @@
             Play = play;
             Audience = audience;
         }
+
+        public Performance(string playId, string playName, PlayType playType, int audience)
+        {
+            Play = new Play(playId, playName, playType);
+            Audience = audience;
+        }
     }
 }
